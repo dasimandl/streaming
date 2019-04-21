@@ -5,6 +5,8 @@ const crypto = require('crypto');
 
 const WSC_API_KEY = `${process.env.WSC_API_KEY}`;
 const WSC_ACCESS_KEY = `${process.env.WSC_ACCESS_KEY}`;
+const LOCAL_API_URL = process.env.REACT_APP_DEV_API_BASE_URL;
+
 // const WSC_API_KEY = `${process.env.SANDBOX_WSC_API_KEY}`;
 // const WSC_ACCESS_KEY = `${process.env.SANDBOX_WSC_ACCESS_KEY}`;
 const hostname = 'https://api.cloud.wowza.com';
@@ -20,11 +22,13 @@ const buildURLConfig = path => {
     .digest('hex');
   return {
     path,
-    headers: {
-      'wsc-access-key': WSC_ACCESS_KEY,
-      'wsc-timestamp': timestamp,
-      'wsc-signature': signature,
-      'Content-Type': 'application/json',
+    headersObj: {
+      headers: {
+        'wsc-access-key': WSC_ACCESS_KEY,
+        'wsc-timestamp': timestamp,
+        'wsc-signature': signature,
+        'Content-Type': 'application/json'
+      }
     }
   };
 };
@@ -34,31 +38,46 @@ router.get('/', (req, res, next) => {
   res.render('index', { title: 'API' });
 });
 /* GET live streams. */
-router.get('/live-streams', function(req, res, next) {
-  const { headers, path } = buildURLConfig(basePath);
-  axios
-    .get(`${hostname + path}`, { headers })
-    .then(({ data }) => {
-      res.json(data);
-    })
-    .catch(err => {
-      console.error(err.response.data.meta);
-      next(err);
-    });
+router.get('/live-streams', async (req, res, next) => {
+  const { headersObj: headers, path } = buildURLConfig(basePath);
+  try {
+    const {
+      data: { live_streams: availableStreams }
+    } = await axios.get(`${hostname + path}`, headers);
+    const allStreamDetails = await Promise.all(
+      availableStreams.map(async ({ id }) => {
+        try {
+          const { data: liveStreamDetails } = await axios.get(
+            `${LOCAL_API_URL}/live-streams/${id}`,
+            headers
+          );
+          return liveStreamDetails;
+        } catch (err) {
+          console.error(err.response ? err.response.data.meta : err);
+        }
+      })
+    );
+    res.json(allStreamDetails);
+  } catch (err) {
+    console.error(err.response ? err.response.data.meta : err);
+    next(err);
+  }
 });
 
-router.get(`/live-streams/:id`, (req, res, next) => {
+// GET single live stream details
+router.get(`/live-streams/:id`, async (req, res, next) => {
   const { id } = req.params;
-  const { headers, path } = buildURLConfig(`${basePath}/${id}`);
-  axios
-    .get(`${hostname + path}`, { headers })
-    .then(({ data }) => {
-      res.json(data);
-    })
-    .catch(err => {
-      console.error(err.response.data.meta);
-      next(err);
-    });
+  const { headersObj: headers, path } = buildURLConfig(`${basePath}/${id}`);
+
+  try {
+    const {
+      data: { live_stream: liveStreamDetail }
+    } = await axios.get(`${hostname + path}`, headers);
+    res.json(liveStreamDetail);
+  } catch (err) {
+    console.error(err.response ? err.response.data.meta : err);
+    next(err);
+  }
 });
 
 module.exports = router;
