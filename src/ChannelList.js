@@ -1,16 +1,29 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+const apiBaseUrl = process.env.REACT_APP_DEV_API_BASE_URL;
+
+console.log(apiBaseUrl);
 
 export default class ChannelList extends Component {
-  componentDidMount() {
-    axios.get('https://api.cloud.wowza.com/api/v1.3/live_streams')
-      .then(data => {
-        this.data = data;
-      })
+  constructor(props) {
+    super(props);
+    this.state = { liveStreams: [] };
   }
-  
+  componentDidMount() {
+    axios.get(`/api/live-streams`).then(({ data }) => {
+      const liveStreams = data.live_streams;
+      this.setState({ liveStreams: liveStreams });
+      console.log(this.state, 'STATES');
+    });
+  }
+
   render() {
-    console.log(this.data);
-    return <div />;
+    const { liveStreams } = this.state;
+    console.log(this.state);
+    return (
+      <div>
+        <ul>{liveStreams && liveStreams.map(stream => <div>{stream.name}</div>)}</ul>
+      </div>
+    );
   }
 }

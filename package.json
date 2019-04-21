@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "dotenv": "^7.0.0",
     "express": "^4.16.4",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -16,6 +17,7 @@
     "eject": "react-scripts eject",
     "start-server": "nodemon ./server/bin/www -e html,js,scss --ignore public --ignore client"
   },
+  "proxy": "http://localhost:1337",
   "eslintConfig": {
     "extends": "react-app"
   },
