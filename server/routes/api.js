@@ -48,8 +48,7 @@ router.get('/live-streams', async (req, res, next) => {
       availableStreams.map(async ({ id }) => {
         try {
           const { data: liveStreamDetails } = await axios.get(
-            `${LOCAL_API_URL}/live-streams/${id}`,
-            headers
+            `${LOCAL_API_URL}/live-streams/${id}`
           );
           return liveStreamDetails;
         } catch (err) {
@@ -68,12 +67,26 @@ router.get('/live-streams', async (req, res, next) => {
 router.get(`/live-streams/:id`, async (req, res, next) => {
   const { id } = req.params;
   const { headersObj: headers, path } = buildURLConfig(`${basePath}/${id}`);
-
   try {
     const {
       data: { live_stream: liveStreamDetail }
     } = await axios.get(`${hostname + path}`, headers);
     res.json(liveStreamDetail);
+  } catch (err) {
+    console.error(err.response ? err.response.data.meta : err);
+    next(err);
+  }
+});
+// GET single live stream thumbnail image
+router.get(`/live-streams/:id/thumbnail`, async (req, res, next) => {
+  const { id } = req.params;
+  const { headersObj: headers, path } = buildURLConfig(`${basePath}/${id}/thumbnail_url`);
+
+  try {
+    const {
+      data: { live_stream: liveStreamThumbnail }
+    } = await axios.get(`${hostname + path}`, headers);
+    res.json(liveStreamThumbnail);
   } catch (err) {
     console.error(err.response ? err.response.data.meta : err);
     next(err);
