@@ -93,4 +93,49 @@ router.get(`/live-streams/:id/thumbnail`, async (req, res, next) => {
   }
 });
 
+// PUT start live stream
+router.put(`/live-streams/:id/start`, async (req, res, next) => {
+  const { id } = req.params;
+  const { headersObj: headers, path } = buildURLConfig(`${basePath}/${id}/start`);
+  try {
+    const {
+      data: { live_stream: status }
+    } = await axios.put(`${hostname + path}`, null, headers);
+    res.json(status);
+  } catch (err) {
+    console.error(err.response ? err.response.data.meta : err);
+    next(err);
+  }
+});
+
+// PUT stop live stream
+router.put(`/live-streams/:id/stop`, async (req, res, next) => {
+  const { id } = req.params;
+  const { headersObj: headers, path } = buildURLConfig(`${basePath}/${id}/stop`);
+  try {
+    const {
+      data: { live_stream: status }
+    } = await axios.put(`${hostname + path}`, null, headers);
+    res.json(status);
+  } catch (err) {
+    console.error(err.response ? err.response.data.meta : err);
+    next(err);
+  }
+});
+
+// GET live stream state
+router.get(`/live-streams/:id/state`, async (req, res, next) => {
+  const { id } = req.params;
+  const { headersObj: headers, path } = buildURLConfig(`${basePath}/${id}/state`);
+  try {
+    const {
+      data: { live_stream: status }
+    } = await axios.get(`${hostname + path}`, headers);
+    res.json(status);
+  } catch (err) {
+    console.error(err.response ? err.response.data.meta : err);
+    next(err);
+  }
+});
+
 module.exports = router;
