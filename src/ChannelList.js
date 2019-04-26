@@ -3,6 +3,7 @@ import axios from 'axios';
 import { withStyles } from '@material-ui/core/styles';
 import ChannelCard from './ChannelCard';
 import Grid from '@material-ui/core/Grid';
+import socketIOClient from "socket.io-client";
 
 // import classes from '*.module.css';
 
@@ -18,6 +19,7 @@ export class ChannelList extends Component {
   }
   componentDidMount() {
     this.fetchLiveStreams();
+    this.socket = socketIOClient('http://localhost:1337')
   }
 
   fetchLiveStreams() {
