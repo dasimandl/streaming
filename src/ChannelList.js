@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { withStyles } from '@material-ui/core/styles';
-import classnames from 'classnames';
 import ChannelCard from './ChannelCard';
 import Grid from '@material-ui/core/Grid';
 

@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import { withStyles } from '@material-ui/core/styles';
-import classnames from 'classnames';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -10,7 +8,7 @@ import CardActions from '@material-ui/core/CardActions';
 
 const styles = theme => ({
   card: {
-    maxWidth: 400
+    maxWidth: '100%'
   },
   media: {
     height: 0,
